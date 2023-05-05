@@ -1,25 +1,59 @@
-import logo from './logo.svg';
-import './App.css';
+import React,{useState} from 'react'
+import {v4 as uuidv4 } from "uuid"
 
-function App() {
+
+import Addtodo from './components/Addtodo/addtodo'
+import EachTodoItem from "./components/EachTodoItem/eachtodoitem"
+import EditTodoItem from "./components/EditTodoItem/edittodoitem"
+
+const App = () => {
+
+  const [todoList,setTodoList] = useState([])
+
+  const addTodoItem =(task)=>{
+
+    const todoItem = {
+      id : uuidv4(),
+      task : task,
+      isCompleted : false,
+      edited : false 
+    }
+
+    setTodoList([...todoList,todoItem])
+    console.log(todoList)
+  }
+
+
+  const deleteItem=(id)=>{
+    const updatedList = todoList.filter(eachTodo => eachTodo.id !== id)
+
+    setTodoList(updatedList)
+  }
+
+  const completedTodoItem=(id)=>{
+    const updatedTodoItem = todoList.map(eachTodo => eachTodo.id === id ? {...eachTodo,isCompleted : !eachTodo.isCompleted} : eachTodo)
+    setTodoList(updatedTodoItem)
+  }
+
+  const editTodoItemInList=(task,id)=>{
+    // console.log(task,id)
+    const editedTodoList = todoList.map(eachItem => eachItem.id === id ? {...eachItem,task,edited : !eachItem.edited} : eachItem)
+    setTodoList(editedTodoList)
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <center>
+    <h1 className='title'>Todos</h1>
+    <Addtodo addTodoItem={addTodoItem}/>
+    <ul>
+      {todoList.map(eachTodo => eachTodo.edited ? <EditTodoItem key={eachTodo.id} currentTask={eachTodo} editTodoItemInList={editTodoItemInList}/> : 
+      (
+        <EachTodoItem key={eachTodo.id} details={eachTodo} deleteTodoItem={deleteItem} 
+        completedTodoItem={completedTodoItem} editTodoItemInList={editTodoItemInList}/>
+      ))}
+    </ul>
+    </center>
+  )
 }
 
-export default App;
+export default App
